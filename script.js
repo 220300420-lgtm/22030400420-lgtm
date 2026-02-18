@@ -181,7 +181,7 @@ addTilt('.tool-card', 3);
 /* ===================== WHATSAPP FLOATING BUTTON ===================== */
 // ⚠️ IMPORTANTE: Cambia este número por el tuyo real
 // Formato: código de país + número sin espacios ni + (ej. México: 521 + número)
-const WHATSAPP_NUMBER = '5215512345678';
+const WHATSAPP_NUMBER = '5219983909502';
 const WHATSAPP_MESSAGE = encodeURIComponent('Hola Adaptia, me interesa conocer más sobre sus servicios de consultoría digital.');
 
 const waBtn = document.createElement('a');
