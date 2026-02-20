@@ -1,0 +1,6 @@
+{
+  // Nombre del Worker — debe coincidir con la URL: 220300420.220300420.workers.dev
+  "name": "220300420",
+  "compatibility_date": "2026-02-20",
+  "main": "src/index.js"
+}
