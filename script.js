@@ -246,6 +246,7 @@ function clearErrors() { ['empresa','responsable','email','tipo','empleados','pr
 function validEmail(e) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e); }
 
 form.addEventListener('submit', e => {
+  e.preventDefault();
   clearErrors();
   let valid = true;
 
@@ -258,7 +259,7 @@ form.addEventListener('submit', e => {
   if (!document.getElementById('empleados').value) { showError('empleados', 'Selecciona el número de empleados.'); valid = false; }
   if (!v('problema')) { showError('problema', 'Describe tu reto principal.'); valid = false; }
 
-  if (!valid) { e.preventDefault(); return; }
+  if (!valid) { return; }
 
   // Set date before submit
   document.getElementById('fecha-hidden').value = new Date().toLocaleString('es-MX', { timeZone: 'America/Mexico_City' });
@@ -268,7 +269,20 @@ form.addEventListener('submit', e => {
   btn.textContent = 'Enviando…';
   btn.disabled = true;
 
-  // Let form submit naturally to FormSubmit
+  // Submit via AJAX — show success message without redirecting
+  fetch(form.action, {
+    method: 'POST',
+    body: new FormData(form),
+    headers: { 'Accept': 'application/json' }
+  })
+  .then(() => {
+    form.classList.add('hidden');
+    successDiv.classList.add('show');
+  })
+  .catch(() => {
+    btn.textContent = 'Solicitar diagnóstico';
+    btn.disabled = false;
+  });
 });
 ['empresa','responsable','email','tipo','empleados','problema'].forEach(id => {
   const el = document.getElementById(id);

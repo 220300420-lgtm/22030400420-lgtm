@@ -97,6 +97,13 @@ INSTRUCCIONES DE COMPORTAMIENTO:
       50% { box-shadow: 0 4px 36px rgba(0,114,255,0.7); }
     }
 
+    @media (max-width: 640px) {
+      #cenbot-btn {
+        right: 1.5rem;
+        bottom: 5.5rem;
+      }
+    }
+
     #cenbot-window {
       position: fixed;
       bottom: 100px;
