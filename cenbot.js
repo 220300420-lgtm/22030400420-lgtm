@@ -287,7 +287,7 @@ INSTRUCCIONES DE COMPORTAMIENTO:
 
     @media (max-width: 480px) {
       #cenbot-window { right: 12px; left: 12px; width: auto; bottom: 90px; }
-      #cenbot-btn { right: 20px; bottom: 24px; }
+      #cenbot-btn { right: 1.5rem; bottom: 5.5rem; }
     }
   `;
   document.head.appendChild(style);
@@ -421,19 +421,27 @@ INSTRUCCIONES DE COMPORTAMIENTO:
         body: JSON.stringify({ messages })
       });
 
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
       const data = await response.json();
 
-      if (data.error) throw new Error(data.error.message);
+      if (data.error) throw new Error(data.error.message || JSON.stringify(data.error));
 
-      const reply = data.choices[0].message.content;
+      const reply = data.choices?.[0]?.message?.content;
+      if (!reply) throw new Error('Respuesta vacía del servidor');
+
       conversationHistory.push({ role: 'assistant', content: reply });
       hideTyping();
       appendMessage('bot', reply);
 
     } catch (err) {
       hideTyping();
-      appendMessage('bot', '😅 Hubo un problema conectándome. Por favor intenta de nuevo o contáctanos directo en la sección de contacto.');
-      console.error('CenBot error:', err);
+      const isNetwork = err.message === 'Failed to fetch' || err.name === 'TypeError';
+      const msg = isNetwork
+        ? '⚠️ No pude conectarme al servidor. Verifica que el Worker de Cloudflare esté activo e intenta de nuevo.'
+        : '😅 Hubo un problema al procesar tu mensaje. Por favor intenta de nuevo o contáctanos en la sección de contacto.';
+      appendMessage('bot', msg);
+      console.error('CenBot error:', err.message);
     }
 
     isLoading = false;
