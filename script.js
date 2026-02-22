@@ -321,10 +321,18 @@ form.addEventListener('submit', e => {
     form.classList.add('hidden');
     successDiv.classList.add('show');
     showFormStatus('');
+codex/analyze-website-code-and-provide-feedback-htr7z1
+    pushDataLayer('lead_form_submit_success', { form_id: 'contact-form' });
+  })
+  .catch(() => {
+    showFormStatus('No pudimos enviar tu solicitud en este momento. Intenta de nuevo en unos minutos.', 'error');
+    pushDataLayer('lead_form_submit_error', { form_id: 'contact-form' });
+=======
 codex/analyze-website-code-and-provide-feedback-wf5rqx
   })
   .catch(() => {
     showFormStatus('No pudimos enviar tu solicitud en este momento. Intenta de nuevo en unos minutos.', 'error');
+main
 main
     btn.textContent = 'Solicitar diagnóstico';
     btn.disabled = false;
