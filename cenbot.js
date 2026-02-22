@@ -100,7 +100,7 @@ INSTRUCCIONES DE COMPORTAMIENTO:
     @media (max-width: 640px) {
       #cenbot-btn {
         right: 1.5rem;
-        bottom: 5.5rem;
+        bottom: 7rem;
       }
     }
 
@@ -286,8 +286,8 @@ INSTRUCCIONES DE COMPORTAMIENTO:
     }
 
     @media (max-width: 480px) {
-      #cenbot-window { right: 12px; left: 12px; width: auto; bottom: 90px; }
-      #cenbot-btn { right: 1.5rem; bottom: 5.5rem; }
+      #cenbot-window { right: 12px; left: 12px; width: auto; bottom: 130px; }
+      #cenbot-btn { right: 1.5rem; bottom: 7rem; }
     }
   `;
   document.head.appendChild(style);
