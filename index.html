@@ -21,22 +21,22 @@
   <meta name="twitter:description" content="Digitalizamos tu taller o concesionaria en semanas.">
   <meta name="twitter:image" content="assets/img/og-image.png">
   <link rel="icon" type="image/x-icon" href="assets/icons/favicon.ico">
-  <link rel="icon" type="image/png" sizes="32x32" href="assets/icons/favicon-32.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="assets/icons/favicon-16.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/icons/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="assets/icons/favicon-16x16.png">
   <link rel="apple-touch-icon" sizes="180x180" href="assets/icons/apple-touch-icon.png">
   <!-- Google Tag Manager -->
   <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
   new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
   j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-  })(window,document,'script','dataLayer','GTM-WG2PSZKL');</script>
+  })(window,document,'script','dataLayer','GTM-W8QR732V');</script>
   <!-- End Google Tag Manager -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-WG2PSZKL" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-W8QR732V" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
   <!-- NAV -->
   <nav class="navbar" id="navbar">
@@ -398,6 +398,15 @@
           <input type="hidden" name="_template" value="table">
           <input type="hidden" name="_next" value="https://220300420-lgtm.github.io/22030400420-lgtm/#contacto">
           <input type="hidden" name="Fecha" id="fecha-hidden">
+          <input type="hidden" name="utm_source" id="utm-source">
+          <input type="hidden" name="utm_medium" id="utm-medium">
+          <input type="hidden" name="utm_campaign" id="utm-campaign">
+          <input type="hidden" name="utm_content" id="utm-content">
+          <input type="hidden" name="utm_term" id="utm-term">
+          <input type="hidden" name="gclid" id="gclid-hidden">
+          <input type="hidden" name="fbclid" id="fbclid-hidden">
+          <input type="hidden" name="referrer" id="referrer-hidden">
+          <input type="hidden" name="landing_page" id="landing-hidden">
           <div class="form-row">
             <div class="form-group"><label for="empresa">Empresa *</label><input type="text" id="empresa" name="empresa" placeholder="Nombre de tu empresa" required /><span class="error-msg" id="err-empresa"></span></div>
             <div class="form-group"><label for="responsable">Responsable *</label><input type="text" id="responsable" name="responsable" placeholder="Tu nombre completo" required /><span class="error-msg" id="err-responsable"></span></div>
@@ -412,6 +421,7 @@
           </div>
           <div class="form-group"><label for="paquete">Paquete de interés</label><select id="paquete" name="paquete"><option value="" disabled selected>Selecciona un paquete (opcional)</option><option value="Start">Adaptia Start</option><option value="Pro">Adaptia Pro</option><option value="Elite">Adaptia Elite</option><option value="No sé aún">No sé aún</option></select></div>
           <div class="form-group"><label for="problema">¿Cuál es tu principal reto operativo? *</label><textarea id="problema" name="problema" rows="4" placeholder="Ej. No tengo control de mis órdenes de servicio, pierdo piezas de inventario, no sé cuánto gano al mes…" required></textarea><span class="error-msg" id="err-problema"></span></div>
+          <p class="form-status" id="form-status" role="status" aria-live="polite"></p>
           <button type="submit" class="btn btn-primary btn-full">Solicitar diagnóstico</button>
         </form>
         <div class="form-success" id="form-success">
