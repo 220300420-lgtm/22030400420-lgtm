@@ -10,8 +10,12 @@
   // ============================================================
   // ⚙️ CONFIGURACIÓN — edita aquí la info de tu negocio
   // ============================================================
-  // URL de tu Cloudflare Worker (la clave de Groq está segura allá)
-  const WORKER_URL = 'https://220300420.220300420.workers.dev';
+  // URLs posibles de tu Cloudflare Worker (usa window.CENBOT_WORKER_URL para sobreescribir en producción)
+  const WORKER_URLS = [
+    window.CENBOT_WORKER_URL,
+    'https://220300420.220300420.workers.dev',
+    'https://220300420.workers.dev'
+  ].filter(Boolean);
 
   const SYSTEM_PROMPT = `
 Eres CenBot, el asistente virtual inteligente de Adaptia Consultoría.
@@ -62,8 +66,8 @@ INSTRUCCIONES DE COMPORTAMIENTO:
 
     #cenbot-btn {
       position: fixed;
-      bottom: 28px;
-      right: 100px;
+      right: var(--fab-right, 1.25rem);
+      bottom: calc(var(--fab-bottom, 1.25rem) + var(--fab-size, 58px) + var(--fab-gap, 14px));
       z-index: 9998;
       width: 58px;
       height: 58px;
@@ -97,17 +101,10 @@ INSTRUCCIONES DE COMPORTAMIENTO:
       50% { box-shadow: 0 4px 36px rgba(0,114,255,0.7); }
     }
 
-    @media (max-width: 640px) {
-      #cenbot-btn {
-        right: 1.5rem;
-        bottom: 8.5rem;
-      }
-    }
-
     #cenbot-window {
       position: fixed;
-      bottom: 100px;
-      right: 100px;
+      bottom: calc(var(--fab-bottom, 1.25rem) + (var(--fab-size, 58px) * 2) + (var(--fab-gap, 14px) * 2));
+      right: var(--fab-right, 1.25rem);
       z-index: 9999;
       width: 360px;
       max-height: 520px;
@@ -286,8 +283,12 @@ INSTRUCCIONES DE COMPORTAMIENTO:
     }
 
     @media (max-width: 480px) {
-      #cenbot-window { right: 12px; left: 12px; width: auto; bottom: 160px; }
-      #cenbot-btn { right: 1.5rem; bottom: 8.5rem; }
+      #cenbot-window {
+        right: 12px;
+        left: 12px;
+        width: auto;
+        bottom: calc(var(--fab-bottom, .9rem) + (var(--fab-size, 58px) * 2) + (var(--fab-gap, 14px) * 2));
+      }
     }
   `;
   document.head.appendChild(style);
@@ -353,6 +354,8 @@ INSTRUCCIONES DE COMPORTAMIENTO:
     if (isOpen && messagesEl.children.length === 0) {
       showWelcome();
     }
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({ event: isOpen ? 'cenbot_open' : 'cenbot_close' });
   }
 
   function showWelcome() {
@@ -398,10 +401,38 @@ INSTRUCCIONES DE COMPORTAMIENTO:
     if (t) t.remove();
   }
 
+
+  async function requestFromWorker(messages) {
+    let lastError = null;
+
+    for (const url of WORKER_URLS) {
+      try {
+        const response = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ messages })
+        });
+
+        if (!response.ok) {
+          const errorBody = await response.text();
+          throw new Error(`HTTP ${response.status} (${url}) ${errorBody.slice(0, 120)}`);
+        }
+
+        return response.json();
+      } catch (err) {
+        lastError = err;
+      }
+    }
+
+    throw lastError || new Error('No se pudo conectar a ningún endpoint del Worker');
+  }
+
   async function sendMessage(text) {
     if (!text.trim() || isLoading) return;
     qrEl.innerHTML = '';
     appendMessage('user', text);
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({ event: 'cenbot_message_sent' });
     conversationHistory.push({ role: 'user', content: text });
     inputEl.value = '';
     isLoading = true;
@@ -415,15 +446,7 @@ INSTRUCCIONES DE COMPORTAMIENTO:
       ];
 
       // Llamar al Cloudflare Worker (la clave de Groq está segura allá)
-      const response = await fetch(WORKER_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages })
-      });
-
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
-
-      const data = await response.json();
+      const data = await requestFromWorker(messages);
 
       if (data.error) throw new Error(data.error.message || JSON.stringify(data.error));
 
@@ -437,10 +460,15 @@ INSTRUCCIONES DE COMPORTAMIENTO:
     } catch (err) {
       hideTyping();
       const isNetwork = err.message === 'Failed to fetch' || err.name === 'TypeError';
+      const workerHint = err.message?.includes('GROQ_API_KEY')
+        ? ' Detecté que falta la variable GROQ_API_KEY en Cloudflare Worker.'
+        : '';
       const msg = isNetwork
-        ? '⚠️ No pude conectarme al servidor. Verifica que el Worker de Cloudflare esté activo e intenta de nuevo.'
-        : '😅 Hubo un problema al procesar tu mensaje. Por favor intenta de nuevo o contáctanos en la sección de contacto.';
+        ? '⚠️ No pude conectarme al servidor. Revisa que el Worker esté publicado y que el dominio esté permitido en CORS.'
+        : `😅 Hubo un problema al procesar tu mensaje.${workerHint} También puedes contactarnos en la sección de contacto.`;
       appendMessage('bot', msg);
+      window.dataLayer = window.dataLayer || [];
+      window.dataLayer.push({ event: 'cenbot_error', error_message: String(err.message || 'unknown') });
       console.error('CenBot error:', err.message);
     }
 
