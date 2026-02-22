@@ -8,6 +8,33 @@ window.addEventListener('scroll', () => {
   progressBar.style.width = pct + '%';
 }, { passive: true });
 
+function pushDataLayer(eventName, payload = {}) {
+  window.dataLayer = window.dataLayer || [];
+  window.dataLayer.push({ event: eventName, ...payload });
+}
+
+function setAttributionHiddenFields() {
+  const params = new URLSearchParams(window.location.search);
+  const fields = {
+    'utm-source': params.get('utm_source') || '',
+    'utm-medium': params.get('utm_medium') || '',
+    'utm-campaign': params.get('utm_campaign') || '',
+    'utm-content': params.get('utm_content') || '',
+    'utm-term': params.get('utm_term') || '',
+    'gclid-hidden': params.get('gclid') || '',
+    'fbclid-hidden': params.get('fbclid') || '',
+    'referrer-hidden': document.referrer || 'direct',
+    'landing-hidden': window.location.href,
+  };
+
+  Object.entries(fields).forEach(([id, value]) => {
+    const el = document.getElementById(id);
+    if (el) el.value = value;
+  });
+}
+
+setAttributionHiddenFields();
+
 /* ===================== NAVBAR ===================== */
 const navbar = document.getElementById('navbar');
 const hamburger = document.getElementById('hamburger');
@@ -225,12 +252,14 @@ waBtn.target = '_blank'; waBtn.rel = 'noopener noreferrer';
 waBtn.id = 'whatsapp-btn'; waBtn.setAttribute('aria-label', 'Contactar por WhatsApp');
 waBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg><span class="wa-tooltip">¿Hablamos?</span><span class="wa-pulse"></span>`;
 document.body.appendChild(waBtn);
+waBtn.addEventListener('click', () => pushDataLayer('whatsapp_click', { placement: 'floating_button' }));
 window.addEventListener('scroll', () => waBtn.classList.toggle('wa-visible', window.scrollY > 400), { passive: true });
 
 /* ===================== PACKAGE SELECTION ===================== */
 function selectPackage(pkgName) {
   const sel = document.getElementById('paquete');
   if (sel) sel.value = pkgName;
+  pushDataLayer('package_selected', { package_name: pkgName });
   document.getElementById('contacto').scrollIntoView({ behavior: 'smooth' });
   setTimeout(() => { sel.style.boxShadow = '0 0 0 3px rgba(0,114,255,0.35)'; setTimeout(() => sel.style.boxShadow = '', 1500); }, 700);
 }
@@ -238,12 +267,22 @@ function selectPackage(pkgName) {
 /* ===================== FORM VALIDATION ===================== */
 const form = document.getElementById('contact-form');
 const successDiv = document.getElementById('form-success');
+const statusMsg = document.getElementById('form-status');
 function showError(id, msg) {
   const e = document.getElementById(`err-${id}`), f = document.getElementById(id);
   if (e) e.textContent = msg; if (f) f.classList.toggle('invalid', !!msg);
 }
 function clearErrors() { ['empresa','responsable','email','tipo','empleados','problema'].forEach(id => showError(id,'')); }
 function validEmail(e) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e); }
+function showFormStatus(message = '', type = '') {
+  if (!statusMsg) return;
+  statusMsg.textContent = message;
+  statusMsg.className = 'form-status';
+  if (message) {
+    statusMsg.classList.add('show');
+    if (type) statusMsg.classList.add(type);
+  }
+}
 
 form.addEventListener('submit', e => {
   e.preventDefault();
@@ -268,6 +307,7 @@ form.addEventListener('submit', e => {
   const btn = form.querySelector('[type="submit"]');
   btn.textContent = 'Enviando…';
   btn.disabled = true;
+  showFormStatus('Estamos enviando tu solicitud…');
 
   // Submit via AJAX — show success message without redirecting
   fetch(form.action, {
@@ -275,11 +315,17 @@ form.addEventListener('submit', e => {
     body: new FormData(form),
     headers: { 'Accept': 'application/json' }
   })
-  .then(() => {
+  .then(response => {
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
     form.classList.add('hidden');
     successDiv.classList.add('show');
+    showFormStatus('');
+    pushDataLayer('lead_form_submit_success', { form_id: 'contact-form' });
   })
   .catch(() => {
+    showFormStatus('No pudimos enviar tu solicitud en este momento. Intenta de nuevo en unos minutos.', 'error');
+    pushDataLayer('lead_form_submit_error', { form_id: 'contact-form' });
     btn.textContent = 'Solicitar diagnóstico';
     btn.disabled = false;
   });
