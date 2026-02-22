@@ -63,6 +63,24 @@ navLinks.querySelectorAll('a').forEach(a => a.addEventListener('click', closeMob
 
 /* ===================== ACTIVE NAV ===================== */
 const navLinkEls = document.querySelectorAll('.nav-link');
+claude/review-website-code-kczK0
+const navObs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) navLinkEls.forEach(l => l.classList.toggle('active', l.getAttribute('href') === `#${e.target.id}`));
+  });
+}, { threshold: 0.35 });
+document.querySelectorAll('section[id]').forEach(s => navObs.observe(s));
+
+/* ===================== SCROLL REVEAL ===================== */
+const revealObs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); revealObs.unobserve(e.target); } });
+}, { threshold: 0.1 });
+document.querySelectorAll('.reveal').forEach(el => revealObs.observe(el));
+// Fallback: garantiza visibilidad si IntersectionObserver no dispara (iOS Safari antiguo, etc.)
+setTimeout(() => {
+  document.querySelectorAll('.reveal:not(.visible)').forEach(el => el.classList.add('visible'));
+}, 1200);
+=======
 const hasIntersectionObserver = 'IntersectionObserver' in window;
 if (hasIntersectionObserver) {
   const navObs = new IntersectionObserver(entries => {
@@ -82,6 +100,7 @@ if (hasIntersectionObserver) {
 } else {
   document.querySelectorAll('.reveal').forEach(el => el.classList.add('visible'));
 }
+main
 
 /* ===================== WORD-BY-WORD REVEAL ===================== */
 const heroH1 = document.querySelector('.hero-text h1');
