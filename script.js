@@ -269,6 +269,7 @@ function selectPackage(pkgName) {
 const form = document.getElementById('contact-form');
 const successDiv = document.getElementById('form-success');
 const statusMsg = document.getElementById('form-status');
+const CONTACT_FORM_ID = 'contact-form';
 function showError(id, msg) {
   const e = document.getElementById(`err-${id}`), f = document.getElementById(id);
   if (e) e.textContent = msg; if (f) f.classList.toggle('invalid', !!msg);
@@ -322,11 +323,11 @@ form.addEventListener('submit', e => {
     form.classList.add('hidden');
     successDiv.classList.add('show');
     showFormStatus('');
-    pushDataLayer('lead_form_submit_success', { form_id: 'contact-form' });
+    pushDataLayer('lead_form_submit_success', { form_id: CONTACT_FORM_ID });
   })
   .catch(() => {
     showFormStatus('No pudimos enviar tu solicitud en este momento. Intenta de nuevo en unos minutos.', 'error');
-    pushDataLayer('lead_form_submit_error', { form_id: 'contact-form' });
+    pushDataLayer('lead_form_submit_error', { form_id: CONTACT_FORM_ID });
     btn.textContent = 'Solicitar diagnóstico';
     btn.disabled = false;
   });
