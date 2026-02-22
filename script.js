@@ -2,6 +2,7 @@
 const progressBar = document.createElement('div');
 progressBar.id = 'scroll-progress';
 document.body.prepend(progressBar);
+document.documentElement.classList.add('js');
 
 window.addEventListener('scroll', () => {
   const pct = (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
@@ -268,6 +269,9 @@ function selectPackage(pkgName) {
 const form = document.getElementById('contact-form');
 const successDiv = document.getElementById('form-success');
 const statusMsg = document.getElementById('form-status');
+codex/analyze-website-code-and-provide-feedback-1mmv9n
+const CONTACT_FORM_ID = 'contact-form';
+main
 function showError(id, msg) {
   const e = document.getElementById(`err-${id}`), f = document.getElementById(id);
   if (e) e.textContent = msg; if (f) f.classList.toggle('invalid', !!msg);
@@ -321,17 +325,23 @@ form.addEventListener('submit', e => {
     form.classList.add('hidden');
     successDiv.classList.add('show');
     showFormStatus('');
+codex/analyze-website-code-and-provide-feedback-1mmv9n
+    pushDataLayer('lead_form_submit_success', { form_id: CONTACT_FORM_ID });
+  })
+  .catch(() => {
+    showFormStatus('No pudimos enviar tu solicitud en este momento. Intenta de nuevo en unos minutos.', 'error');
+    pushDataLayer('lead_form_submit_error', { form_id: CONTACT_FORM_ID });
 codex/analyze-website-code-and-provide-feedback-htr7z1
     pushDataLayer('lead_form_submit_success', { form_id: 'contact-form' });
   })
   .catch(() => {
     showFormStatus('No pudimos enviar tu solicitud en este momento. Intenta de nuevo en unos minutos.', 'error');
     pushDataLayer('lead_form_submit_error', { form_id: 'contact-form' });
-=======
 codex/analyze-website-code-and-provide-feedback-wf5rqx
   })
   .catch(() => {
     showFormStatus('No pudimos enviar tu solicitud en este momento. Intenta de nuevo en unos minutos.', 'error');
+main
 main
 main
     btn.textContent = 'Solicitar diagnóstico';

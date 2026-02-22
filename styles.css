@@ -609,11 +609,15 @@ textarea { resize: vertical; }
 
 /* ===================== ANIMATIONS ===================== */
 .reveal {
+  opacity: 1;
+  transform: none;
+}
+html.js .reveal {
   opacity: 0;
   transform: translateY(28px);
   transition: opacity .65s ease, transform .65s ease;
 }
-.reveal.visible { opacity: 1; transform: translateY(0); }
+html.js .reveal.visible { opacity: 1; transform: translateY(0); }
 .reveal-delay { transition-delay: .12s; }
 .reveal-delay2 { transition-delay: .24s; }
 .reveal-delay3 { transition-delay: .36s; }
