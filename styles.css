@@ -18,7 +18,7 @@
 
 /* ===================== RESET ===================== */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; }
+html { scroll-behavior: smooth; overflow-x: hidden; }
 body {
   font-family: var(--font-body);
   background: var(--bg);
@@ -887,11 +887,26 @@ textarea { resize: vertical; }
 .case-arrow-right { font-size: 1.2rem; color: var(--blue); font-weight: 700; }
 .case-desc { font-size: .9rem; }
 
-/* ===================== SMALL MOBILE FIX ===================== */
+/* ===================== MOBILE ===================== */
+@media (max-width: 640px) {
+  /* Tools grid: 1 columna en pantallas muy pequeñas, 2 en medianas */
+  .tools-grid { gap: .75rem; }
+  .tool-card { padding: 1rem; gap: .75rem; }
+  /* Steps apilados */
+  .step { min-width: 0; width: 100%; max-width: 100%; }
+  /* Hero stats en 2x2 */
+  .mockup-content { gap: .5rem; padding: .75rem; }
+  /* Botones hero apilados */
+  .hero-ctas { flex-direction: column; }
+  .hero-ctas .btn { width: 100%; text-align: center; }
+}
+
 @media (max-width: 480px) {
-  .tools-grid { gap: .6rem; }
-  .tool-card { padding: .8rem; gap: .55rem; font-size: .8rem; }
+  .tools-grid { grid-template-columns: 1fr; }
+  .tool-card { font-size: .88rem; }
   .tool-icon { width: 28px; height: 28px; }
+  /* CenBot y WhatsApp: separados verticalmente */
+  #cenbot-btn { bottom: 6rem !important; right: 1.2rem !important; }
 }
 
 /* ===================== RESPONSIVE ADDITIONS ===================== */
