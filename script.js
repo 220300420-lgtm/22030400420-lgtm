@@ -238,12 +238,22 @@ function selectPackage(pkgName) {
 /* ===================== FORM VALIDATION ===================== */
 const form = document.getElementById('contact-form');
 const successDiv = document.getElementById('form-success');
+const statusMsg = document.getElementById('form-status');
 function showError(id, msg) {
   const e = document.getElementById(`err-${id}`), f = document.getElementById(id);
   if (e) e.textContent = msg; if (f) f.classList.toggle('invalid', !!msg);
 }
 function clearErrors() { ['empresa','responsable','email','tipo','empleados','problema'].forEach(id => showError(id,'')); }
 function validEmail(e) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e); }
+function showFormStatus(message = '', type = '') {
+  if (!statusMsg) return;
+  statusMsg.textContent = message;
+  statusMsg.className = 'form-status';
+  if (message) {
+    statusMsg.classList.add('show');
+    if (type) statusMsg.classList.add(type);
+  }
+}
 
 form.addEventListener('submit', e => {
   e.preventDefault();
@@ -268,6 +278,7 @@ form.addEventListener('submit', e => {
   const btn = form.querySelector('[type="submit"]');
   btn.textContent = 'Enviando…';
   btn.disabled = true;
+  showFormStatus('Estamos enviando tu solicitud…');
 
   // Submit via AJAX — show success message without redirecting
   fetch(form.action, {
@@ -275,11 +286,15 @@ form.addEventListener('submit', e => {
     body: new FormData(form),
     headers: { 'Accept': 'application/json' }
   })
-  .then(() => {
+  .then(response => {
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
     form.classList.add('hidden');
     successDiv.classList.add('show');
+    showFormStatus('');
   })
   .catch(() => {
+    showFormStatus('No pudimos enviar tu solicitud en este momento. Intenta de nuevo en unos minutos.', 'error');
     btn.textContent = 'Solicitar diagnóstico';
     btn.disabled = false;
   });
